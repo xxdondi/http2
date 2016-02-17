@@ -20,3 +20,5 @@ struct Http2Frame {
 };
 
 void send_http2_frame(struct Http2Frame *frame, int sockfd);
+
+int get_http2_frame_size(struct Http2Frame *frame);

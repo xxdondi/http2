@@ -19,4 +19,4 @@ struct Http2Frame {
 	char * payload;
 };
 
-void send_frame(struct Http2Frame *frame, int sockfd);
+void send_http2_frame(struct Http2Frame *frame, int sockfd);

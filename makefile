@@ -1,2 +1,2 @@
 all:
-	gcc src/main.c -o build/main
+	gcc src/main.c src/http2.c -o build/main

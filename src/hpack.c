@@ -4,6 +4,8 @@
 #include <string.h>
 #include "hpack.h"
 
+#define STRING_ENCODING_PREFIX_LENGTH 7
+
 unsigned int clz(int x)
 {
     unsigned int n = 0;
@@ -98,12 +100,12 @@ size_t hpack_get_encoded_string_length(size_t length) {
 	// FIXME:
 	// Correct way to calculate is
 	// length + get_encoded_int_length(length)
-	return length + 1;
+	return length + hpack_get_encoded_integer_length(STRING_ENCODING_PREFIX_LENGTH, length);
 }
 
 size_t hpack_encode_string(char* str, size_t length, byte * out) {
 	byte* start = out;
-	size_t written = hpack_encode_integer(7, length, out);
+	size_t written = hpack_encode_integer(STRING_ENCODING_PREFIX_LENGTH, length, out);
 	// Unset Huffman bit (Huffman encoding not implemented (yet?))
 	*out &= 0x7F;
 	out += written;

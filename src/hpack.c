@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
+#include "hpack.h"
 
-typedef unsigned char byte;
-
-size_t hpack_encode_integer(int n, unsigned int number, char * out) {
+size_t hpack_encode_integer(int n, unsigned int number, byte * out) {
 	// 2^N-1
 	byte nbits = 0xFF >> (8 - n);
 	// The number fits inside the prefix
@@ -36,5 +36,34 @@ size_t hpack_encode_integer(int n, unsigned int number, char * out) {
 		// Write the number to output and return
 		*out = (byte)number;
 		return length + 1;
+	}
+}
+
+unsigned int hpack_decode_integer(int n, byte * in) {
+	unsigned int result = 0;
+	byte prefix = *in;
+	byte nbits = 0xFF >> (8 - n);
+	// Octet with prefix might contain extra bits
+	// we need to unset them
+	prefix &= nbits;
+	// Now we need to check if all the prefix bits
+	// are set
+	if((prefix ^ nbits) != 0) {
+		// Not all of them are set,
+		// return decoded prefix
+		return prefix;
+	} else {
+		byte m = 0;
+		result = prefix;
+		in++;
+		byte next; 
+		do {
+			next = *in;
+			result += (next & 0x7F) * pow(2, m);
+			in++;
+			m += 7;
+		// While continuation bit (MSB) is set	
+		} while((next & 0x80) == 0x80);
+		return result;
 	}
 }

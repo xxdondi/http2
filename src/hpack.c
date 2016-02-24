@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <string.h>
 #include "hpack.h"
 
 size_t hpack_encode_integer(int n, unsigned int number, byte * out) {
@@ -66,4 +67,21 @@ unsigned int hpack_decode_integer(int n, byte * in) {
 		} while((next & 0x80) == 0x80);
 		return result;
 	}
+}
+
+size_t hpack_get_encoded_string_length(size_t length) {
+	// FIXME:
+	// Correct way to calculate is
+	// length + get_encoded_int_length(length)
+	return length + 1;
+}
+
+size_t hpack_encode_string(char* str, size_t length, byte * out) {
+	byte* start = out;
+	size_t written = hpack_encode_integer(7, length, out);
+	// Unset Huffman bit (Huffman encoding not implemented (yet?))
+	*out &= 0x7F;
+	out += written;
+	memcpy(out, str, length);
+	return (start - out + length);
 }

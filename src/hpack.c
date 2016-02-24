@@ -4,6 +4,31 @@
 #include <string.h>
 #include "hpack.h"
 
+unsigned int clz(int x)
+{
+    unsigned int n = 0;
+    const unsigned int bits = sizeof(x) * 8;
+    for (int i = 1; i < bits; i ++) {
+        if (x < 0) break;
+        n ++;
+        x <<= 1;
+    }
+    return n;
+}
+
+size_t hpack_get_encoded_integer_length(int n, unsigned int number) {
+	byte nbits = 0xFF >> (8 - n);
+	if(number < nbits) {
+		return 1;
+	}
+	int bits = (sizeof(number) * 8) - clz(number - nbits);
+	if(bits % 7 == 0) {
+		return 1 + ((bits) / 7);
+	} else {
+		return 2 + ((bits) / 7);
+	}
+}
+
 size_t hpack_encode_integer(int n, unsigned int number, byte * out) {
 	// 2^N-1
 	byte nbits = 0xFF >> (8 - n);

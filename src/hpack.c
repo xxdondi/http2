@@ -23,11 +23,12 @@ size_t hpack_get_encoded_integer_length(int n, unsigned int number) {
 	if(number < nbits) {
 		return 1;
 	}
-	int bits = (sizeof(number) * 8) - clz(number - nbits);
+	int bits = (sizeof(number) * 8) - clz(number - nbits); 
+	size_t length = bits / 7;
 	if(bits % 7 == 0) {
-		return 1 + ((bits) / 7);
+		return 1 + length;
 	} else {
-		return 2 + ((bits) / 7);
+		return 2 + length;
 	}
 }
 

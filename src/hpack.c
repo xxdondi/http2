@@ -98,9 +98,6 @@ unsigned int hpack_decode_integer(int n, byte * in) {
 }
 
 size_t hpack_get_encoded_string_length(size_t length) {
-	// FIXME:
-	// Correct way to calculate is
-	// length + get_encoded_int_length(length)
 	return length + hpack_get_encoded_integer_length(STRING_ENCODING_PREFIX_LENGTH, length);
 }
 
@@ -113,3 +110,4 @@ size_t hpack_encode_string(char* str, size_t length, byte * out) {
 	memcpy(out, str, length);
 	return (start - out + length);
 }
+				
